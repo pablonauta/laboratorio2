@@ -30,22 +30,25 @@ function make_jugador()
 	j.y=64
 	j.vx=0
 	j.vy=0
+	j.piso=100
+	j.salto=-4
+	j.gravedad=0.4
 	j.spr=1
 
 	j.upd=function()
 		if btn(0) then j.x-=1 end
 		if btn(1) then j.x+=1 end
 
-		j.vy+=0.3
+		j.vy+=j.gravedad
 		j.y+=j.vy
 
-		if j.y>64 then
-			j.y=64
+		if j.y>j.piso then
+			j.y=j.piso
 			j.vy=0
 		end
 
-		if btnp(4) and j.y==64 then
-			j.vy=-4
+		if btnp(4) and j.y==j.piso then
+			j.vy=j.salto
 		end
 	end
 
