@@ -28,61 +28,84 @@ end
 -->8
 -- jugador
 
+
 function make_jugador()
 	local j={}
 
-	
 	j.ancho=16
- j.alto=16
+	j.alto=16
+
 	j.x=64
-	j.y=64
-	j.vx=0
-	j.vy=0
-	j.piso=64
-	j.salto=-4
+	j.y=90
+
+	j.z=0
+	j.vz=0
+
+	j.salto=4
 	j.gravedad=0.4
+
 	j.spr=1
 
 	j.upd=function()
-		if btn(0) then j.x-=1 end
-		if btn(1) then j.x+=1 end
 
-		if j.x<0 then
-			j.x=0
-		end
+	 if btn(0) then j.x-=1 end
+	 if btn(1) then j.x+=1 end
+ 
+	 if btn(2) then j.y-=1 end
+	 if btn(3) then j.y+=1 end
 
-		if j.x>128-j.ancho then
-			j.x=128-j.ancho
-		end
+	 if j.x<0 then
+		 j.x=0
+	 end
 
-		j.vy+=j.gravedad
-		j.y+=j.vy
+	 if j.x>mundo.ancho-j.ancho then
+		 j.x=mundo.ancho-j.ancho
+	 end
 
-		if j.y>j.piso then
-			j.y=j.piso
-			j.vy=0
-		end
+	 if j.y<mundo.y_min then
+		 j.y=mundo.y_min
+	 end
 
-		if btnp(4) and j.y==j.piso then
-			j.vy=j.salto
-		end
-	end
+	 if j.y>mundo.y_max then
+		 j.y=mundo.y_max
+	 end
 
+	 if btnp(4) and j.z==0 then
+		 j.vz=j.salto
+	 end
+
+	 j.z+=j.vz
+	 j.vz-=j.gravedad
+ 
+	 if j.z<0 then
+		 j.z=0
+		 j.vz=0
+	 end
+
+ end
+	
 	j.drw=function()
-		spr(j.spr,j.x,j.y,2,2)
-	end
-
+	 spr(j.spr,j.x,j.y-j.alto-j.z,2,2)
+ end
+	
 	add(ents,j)
 	return j
+
 end
 -->8
--- mudndo
+-- mundo
+
 function crear_mundo_1()
 	local w={}
 
+	w.tipo="calle"
+
 	w.ancho=128*3
-	w.piso=100
-	w.color=8
+
+	w.y_min=70
+	w.y_max=105
+
+	w.color=10
 
 	return w
 end
@@ -90,21 +113,28 @@ end
 function crear_mundo_2()
 	local w={}
 
+	w.tipo="calle"
+
 	w.ancho=128*5
-	w.piso=80
-	w.color=0
+
+	w.y_min=60
+	w.y_max=95
+
+	w.color=8
 
 	return w
 end
 
 function dibujar_mundo(w)
+
 	rectfill(
 		0,
-		w.piso,
+		w.y_min,
 		w.ancho,
-		127,
+		w.y_max,
 		w.color
 	)
+
 end
 __gfx__
 00000000000dddddd0000000000dddddd000000000000000000ddddddd0000000009999990000000000999999000000000770999999000770000000000000000
