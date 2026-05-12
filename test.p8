@@ -7,6 +7,7 @@ function _init()
 	ents={}
 	mundo=crear_mundo_1()
 	jug=make_jugador()
+	mal=make_malandro()
 end
 
 function _update()
@@ -135,6 +136,32 @@ function dibujar_mundo(w)
 		w.color
 	)
 
+end
+-->8
+-- malandros
+
+function make_malandro()
+
+	local m={}
+
+	m.x=110
+	m.y=100
+
+	m.ancho=16
+	m.alto=16
+
+	m.spr=8
+
+	m.upd=function()
+	end
+
+	m.drw=function()
+	 spr(m.spr,m.x,m.y-m.alto,2,2)
+ end
+
+	add(ents,m)
+
+	return m
 end
 __gfx__
 00000000000dddddd0000000000dddddd000000000000000000ddddddd0000000009999990000000000999999000000000770999999000770000000000000000
