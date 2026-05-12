@@ -5,6 +5,7 @@ __lua__
 
 function _init()
 	ents={}
+	mundo=crear_mundo_1()
 	jug=make_jugador()
 end
 
@@ -16,9 +17,13 @@ end
 
 function _draw()
 	cls()
+
+	dibujar_mundo(mundo)
+
 	for e in all(ents) do
 		e.drw()
 	end
+
 end
 -->8
 -- jugador
@@ -26,11 +31,14 @@ end
 function make_jugador()
 	local j={}
 
+	
+	j.ancho=16
+ j.alto=16
 	j.x=64
 	j.y=64
 	j.vx=0
 	j.vy=0
-	j.piso=100
+	j.piso=64
 	j.salto=-4
 	j.gravedad=0.4
 	j.spr=1
@@ -38,6 +46,14 @@ function make_jugador()
 	j.upd=function()
 		if btn(0) then j.x-=1 end
 		if btn(1) then j.x+=1 end
+
+		if j.x<0 then
+			j.x=0
+		end
+
+		if j.x>128-j.ancho then
+			j.x=128-j.ancho
+		end
 
 		j.vy+=j.gravedad
 		j.y+=j.vy
@@ -58,6 +74,37 @@ function make_jugador()
 
 	add(ents,j)
 	return j
+end
+-->8
+-- mudndo
+function crear_mundo_1()
+	local w={}
+
+	w.ancho=128*3
+	w.piso=100
+	w.color=8
+
+	return w
+end
+
+function crear_mundo_2()
+	local w={}
+
+	w.ancho=128*5
+	w.piso=80
+	w.color=0
+
+	return w
+end
+
+function dibujar_mundo(w)
+	rectfill(
+		0,
+		w.piso,
+		w.ancho,
+		127,
+		w.color
+	)
 end
 __gfx__
 00000000000dddddd0000000000dddddd000000000000000000ddddddd0000000009999990000000000999999000000000770999999000770000000000000000
