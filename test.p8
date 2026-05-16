@@ -27,6 +27,74 @@ function _draw()
 
 end
 -->8
+-- mundo
+
+function crear_mundo_1()
+	local w={}
+
+	w.tipo="calle"
+
+	w.ancho=128*3
+
+	w.y_min=70
+	w.y_max=105
+
+	w.color=10
+
+	return w
+end
+
+function crear_mundo_2()
+	local w={}
+
+	w.tipo="calle"
+
+	w.ancho=128*5
+
+	w.y_min=60
+	w.y_max=95
+
+	w.color=8
+
+	return w
+end
+
+function dibujar_mundo(w)
+
+	rectfill(
+		0,
+		w.y_min,
+		w.ancho,
+		w.y_max,
+		w.color
+	)
+
+end
+-->8
+function make_entidad()
+
+ local e={}
+
+ e.x=0
+ e.y=0
+ e.z=0
+ e.flip=false
+
+ e.spr=1
+
+ e.upd=function()
+ end
+
+ e.drw=function()
+  spr(e.spr,e.x,e.y-e.z,2,2,e.flip)
+ end
+
+ add(ents,e)
+
+ return e
+
+end
+-->8
 -- jugador
 
 function make_jugador()
@@ -98,50 +166,6 @@ function make_jugador()
 
 end
 -->8
--- mundo
-
-function crear_mundo_1()
-	local w={}
-
-	w.tipo="calle"
-
-	w.ancho=128*3
-
-	w.y_min=70
-	w.y_max=105
-
-	w.color=10
-
-	return w
-end
-
-function crear_mundo_2()
-	local w={}
-
-	w.tipo="calle"
-
-	w.ancho=128*5
-
-	w.y_min=60
-	w.y_max=95
-
-	w.color=8
-
-	return w
-end
-
-function dibujar_mundo(w)
-
-	rectfill(
-		0,
-		w.y_min,
-		w.ancho,
-		w.y_max,
-		w.color
-	)
-
-end
--->8
 -- malandros
 
 function make_malandro()
@@ -157,30 +181,6 @@ function make_malandro()
  m.spr=8
 
  return m
-
-end
--->8
-function make_entidad()
-
- local e={}
-
- e.x=0
- e.y=0
- e.z=0
- e.flip=false
-
- e.spr=1
-
- e.upd=function()
- end
-
- e.drw=function()
-  spr(e.spr,e.x,e.y-e.z,2,2,e.flip)
- end
-
- add(ents,e)
-
- return e
 
 end
 __gfx__
