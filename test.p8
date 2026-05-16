@@ -48,8 +48,14 @@ function make_jugador()
 
 	j.upd=function()
 
-	 if btn(0) then j.x-=1 end
-	 if btn(1) then j.x+=1 end
+	 if btn(0) then
+ 		j.x-=1
+ 		j.flip=true
+		end
+	 if btn(1) then
+ 		j.x+=1
+ 		j.flip=false
+		end
  
 	 if btn(2) then j.y-=1 end
 	 if btn(3) then j.y+=1 end
@@ -85,7 +91,7 @@ function make_jugador()
  end
 	
 	j.drw=function()
-	 spr(j.spr,j.x,j.y-j.alto-j.z,2,2)
+	 spr(j.spr,j.x,j.y-j.alto-j.z,2,2,j.flip)
  end
 	
 	return j
@@ -161,6 +167,7 @@ function make_entidad()
  e.x=0
  e.y=0
  e.z=0
+ e.flip=false
 
  e.spr=1
 
@@ -168,7 +175,7 @@ function make_entidad()
  end
 
  e.drw=function()
-  spr(e.spr,e.x,e.y-e.z,2,2)
+  spr(e.spr,e.x,e.y-e.z,2,2,e.flip)
  end
 
  add(ents,e)
