@@ -71,8 +71,6 @@ function dibujar_mundo(w)
 
 end
 -->8
--- entidad
-
 function make_entidad()
 
  local e={}
@@ -80,13 +78,20 @@ function make_entidad()
  e.x=0
  e.y=0
  e.z=0
- e.flip=false
+ 
+ e.dx=0
+ e.dy=0
+ 
+ e.vel=1
 
+ e.flip=false
  e.spr=1
 
  e.upd=function()
+  e.x+=e.dx
+  e.y+=e.dy
  end
-
+      
  e.drw=function()
   spr(e.spr,e.x,e.y-e.z,2,2,e.flip)
  end
@@ -100,71 +105,83 @@ end
 -- jugador
 
 function make_jugador()
-	local j=make_entidad()
 
-	j.ancho=16
-	j.alto=16
+ local j=make_entidad()
 
-	j.x=64
-	j.y=90
+ j.ancho=16
+ j.alto=16
 
-	
-	j.vz=0
+ j.x=64
+ j.y=90
 
-	j.salto=4
-	j.gravedad=0.4
+ j.vel=0.8
 
-	
+ j.vz=0
+ j.salto=4
+ j.gravedad=0.4
 
-	j.upd=function()
+ local upd_base=j.upd
 
-	 if btn(0) then
- 		j.x-=1
- 		j.flip=true
-		end
-	 if btn(1) then
- 		j.x+=1
- 		j.flip=false
-		end
- 
-	 if btn(2) then j.y-=1 end
-	 if btn(3) then j.y+=1 end
+ j.upd=function()
 
-	 if j.x<0 then
-		 j.x=0
-	 end
+  j.dx=0
+  j.dy=0
 
-	 if j.x>mundo.ancho-j.ancho then
-		 j.x=mundo.ancho-j.ancho
-	 end
+  if btn(0) then
+   j.dx=-j.vel
+   j.flip=true
+  end
 
-	 if j.y<mundo.y_min then
-		 j.y=mundo.y_min
-	 end
+  if btn(1) then
+   j.dx=j.vel
+   j.flip=false
+  end
 
-	 if j.y>mundo.y_max then
-		 j.y=mundo.y_max
-	 end
+  if btn(2) then
+   j.dy=-j.vel
+  end
 
-	 if btnp(4) and j.z==0 then
-		 j.vz=j.salto
-	 end
+  if btn(3) then
+   j.dy=j.vel
+  end
 
-	 j.z+=j.vz
-	 j.vz-=j.gravedad
- 
-	 if j.z<0 then
-		 j.z=0
-		 j.vz=0
-	 end
+  upd_base()
+
+  if j.x<0 then
+   j.x=0
+  end
+
+  if j.x>mundo.ancho-j.ancho then
+   j.x=mundo.ancho-j.ancho
+  end
+
+  if j.y<mundo.y_min then
+   j.y=mundo.y_min
+  end
+
+  if j.y>mundo.y_max then
+   j.y=mundo.y_max
+  end
+
+  if btnp(4) and j.z==0 then
+   j.vz=j.salto
+  end
+
+  j.z+=j.vz
+  j.vz-=j.gravedad
+
+  if j.z<0 then
+   j.z=0
+   j.vz=0
+  end
 
  end
-	
-	j.drw=function()
-	 spr(j.spr,j.x,j.y-j.alto-j.z,2,2,j.flip)
+
+ j.drw=function()
+  spr(j.spr, j.x, j.y-j.alto-j.z,2,2,j.flip)
  end
-	
-	return j
+
+ return j
 
 end
 -->8
