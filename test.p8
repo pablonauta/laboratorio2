@@ -71,6 +71,8 @@ function dibujar_mundo(w)
 
 end
 -->8
+-- entidad
+
 function make_entidad()
 
  local e={}
