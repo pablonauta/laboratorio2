@@ -239,12 +239,10 @@ function make_malandro()
   -- patrullando
   if m.x < 0 then
    m.dx=m.vel
-   m.flip=false
   end
 
   if m.x > 120 then
    m.dx=-m.vel
-   m.flip=true
   end
 
   -- animacion
