@@ -212,7 +212,15 @@ function make_jugador()
   elseif j.estado=="caminando" then
    j.fs={3,33,35,33}
    j.df=0.10
-  else
+  
+  -- saltando
+  elseif j.estado=="saltando" then
+   j.fs={1}
+   j.df=0
+   j.f=1
+  
+  
+  elseif j.estado=="quieto" then
    j.fs={1}
    j.df=0
    j.f=1
