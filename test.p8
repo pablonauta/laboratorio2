@@ -114,7 +114,7 @@ function make_jugador()
  j.x=64
  j.y=90
 
- j.vel=0.8
+ j.vel=1
 
  j.vz=0
  j.salto=4
