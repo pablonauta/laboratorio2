@@ -92,6 +92,13 @@ function make_entidad()
  e.spr=1
 
  e.upd=function()
+  
+  if e.dx < 0 then
+   e.flip=true
+  elseif e.dx > 0 then
+   e.flip=false
+  end
+  
   e.x+=e.dx
   e.y+=e.dy
   
@@ -220,9 +227,39 @@ function make_malandro()
  m.ancho=16
  m.alto=16
 
- m.fs={8}
- m.df=0
- m.f=1
+ m.vel=0.5
+
+ m.dx=-m.vel
+
+ local upd_base=m.upd
+
+ m.upd=function()
+ 
+ 
+  -- patrullando
+  if m.x < 0 then
+   m.dx=m.vel
+   m.flip=false
+  end
+
+  if m.x > 120 then
+   m.dx=-m.vel
+   m.flip=true
+  end
+
+  -- animacion
+  if m.dx != 0 then
+   m.fs={10,40,10}
+   m.df=0.10
+  else
+   m.fs={8}
+   m.df=0
+   m.f=1
+  end
+
+  upd_base()
+
+ end
 
  return m
 
