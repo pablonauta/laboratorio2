@@ -89,6 +89,8 @@ function make_entidad()
  e.t_ataque=0
  e.danio=1
  
+ e.estado="quieto"
+ 
  e.f=1
  e.df=0.15
  e.fs={1}
@@ -170,42 +172,53 @@ function make_jugador()
    j.dy=j.vel
   end
 
-  
   if btnp(5) and not j.atacando then
    j.atacando=true
    j.t_ataque=8
   end
+  
+  if j.atacando then
+   j.estado="atacando"
 
-   if j.atacando then
+  elseif j.z > 0 then
+   j.estado="saltando"
 
- j.t_ataque-=1
+  elseif j.estado=="caminando" then
+   j.estado="caminando"
 
- if j.t_ataque > 5 then
-  j.fs={73}
- elseif j.t_ataque > 2 then
-  j.fs={75}
- else
-  j.fs={73}
- end
+  else
+   j.estado="quieto"
+  end
 
- j.df=0
- j.f=1
+  if j.estado=="atacando" then
+   j.t_ataque-=1
 
- if j.t_ataque<=0 then
-  j.atacando=false
- end
+  if j.t_ataque > 5 then
+   j.fs={73}
+  elseif j.t_ataque > 2 then
+   j.fs={75}
+  else
+   j.fs={73}
+  end
 
- -- caminando
- elseif j.dx != 0 or j.dy != 0 then
-  j.fs={3,33,35,33}
-  j.df=0.10
- else
-  j.fs={1}
   j.df=0
   j.f=1
- end
+
+  if j.t_ataque<=0 then
+   j.atacando=false
+  end
+
+  -- caminando
+  elseif j.dx != 0 or j.dy != 0 then
+   j.fs={3,33,35,33}
+   j.df=0.10
+  else
+   j.fs={1}
+   j.df=0
+   j.f=1
+  end
  
- upd_base()
+  upd_base()
 
   if j.x<0 then
    j.x=0
