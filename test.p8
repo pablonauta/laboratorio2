@@ -83,6 +83,10 @@ function make_entidad()
  e.dy=0
  
  e.vel=1
+ 
+ e.f=1
+ e.df=0.15
+ e.fs={1}
 
  e.flip=false
  e.spr=1
@@ -90,10 +94,17 @@ function make_entidad()
  e.upd=function()
   e.x+=e.dx
   e.y+=e.dy
+  
+  e.f+=e.df
+
+  if e.f>#e.fs then
+   e.f=1
+  end
+ 
  end
       
  e.drw=function()
-  spr(e.spr,e.x,e.y-e.z,2,2,e.flip)
+  spr(e.fs[flr(e.f)],e.x,e.y-e.z,2,2,e.flip)
  end
 
  add(ents,e)
@@ -115,6 +126,8 @@ function make_jugador()
  j.y=90
 
  j.vel=1
+ 
+ j.fs={1}
 
  j.vz=0
  j.salto=4
@@ -143,6 +156,16 @@ function make_jugador()
 
   if btn(3) then
    j.dy=j.vel
+  end
+  
+  -- caminando
+  if j.dx != 0 or j.dy != 0 then
+   j.fs={3,33,35,33}
+   j.df=0.15
+  else
+   j.fs={1}
+   j.df=0
+   j.f=1
   end
 
   upd_base()
@@ -178,7 +201,7 @@ function make_jugador()
  end
 
  j.drw=function()
-  spr(j.spr, j.x, j.y-j.alto-j.z,2,2,j.flip)
+  spr(j.fs[flr(j.f)], j.x, j.y-j.alto-j.z,2,2,j.flip)
  end
 
  return j
@@ -197,7 +220,9 @@ function make_malandro()
  m.ancho=16
  m.alto=16
 
- m.spr=8
+ m.fs={8}
+ m.df=0
+ m.f=1
 
  return m
 
