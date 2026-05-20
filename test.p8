@@ -276,36 +276,46 @@ function make_malandro()
 
  local m=make_entidad()
 
-  m.x=110
-  m.y=90
+ m.x=110
+ m.y=90
 
-  m.ancho=16
-  m.alto=16
- 
-  m.vel=0.5
-  m.dx=-m.vel
+ m.ancho=16
+ m.alto=16
 
-  local upd_base=m.upd
+ m.vel=0.5
+ m.dx=-m.vel
 
-  m.upd=function()
+ m.estado="patrull"
 
-  -- patrulla
-  if m.x < 0 then
-   m.dx=m.vel
-  end
+ local upd_base=m.upd
 
-  if m.x > 120 then
-   m.dx=-m.vel
-  end
+ m.upd=function()
 
-  -- animacion
-  if m.dx != 0 then
+  -- estados
+  if m.estado=="patrull" then
+
+   -- movimiento
+   if m.x < 0 then
+    m.dx=m.vel
+   end
+
+   if m.x > 120 then
+    m.dx=-m.vel
+   end
+
+   -- caminando
    m.fs={10,40,10}
    m.df=0.10
-  else
+
+  elseif m.estado=="quieto" then
+
+   m.dx=0
+
+   -- quieto
    m.fs={8}
    m.df=0
    m.f=1
+
   end
 
   upd_base()
