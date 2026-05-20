@@ -287,6 +287,14 @@ function make_malandro()
 
  m.estado="patrull"
 
+ -- hurt box
+ m.bb={
+  x1=2,
+  y1=0,
+  x2=14,
+  y2=16
+ }
+
  local upd_base=m.upd
 
  m.upd=function()
@@ -294,7 +302,6 @@ function make_malandro()
   -- estados
   if m.estado=="patrull" then
 
-   -- movimiento
    if m.x < 0 then
     m.dx=m.vel
    end
@@ -319,6 +326,24 @@ function make_malandro()
   end
 
   upd_base()
+
+ end
+
+ -- draw
+ local drw_base=m.drw
+
+ m.drw=function()
+
+  drw_base()
+
+  -- hurt box
+  rect(
+   m.x+m.bb.x1,
+   m.y+m.bb.y1,
+   m.x+m.bb.x2,
+   m.y+m.bb.y2,
+   8
+  )
 
  end
 
