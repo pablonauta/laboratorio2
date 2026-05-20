@@ -146,6 +146,10 @@ function make_jugador()
  j.vz=0
  j.salto=4
  j.gravedad=0.4
+ 
+ j.atacando=false
+ j.t_ataque=0
+ j.estado="quieto"
 
  local upd_base=j.upd
 
@@ -177,6 +181,18 @@ function make_jugador()
    j.t_ataque=8
   end
   
+  if btnp(4) and j.z==0 then
+   j.vz=j.salto
+  end
+
+  j.z+=j.vz
+  j.vz-=j.gravedad
+
+  if j.z<0 then
+   j.z=0
+   j.vz=0
+  end
+  
   if j.atacando then
    j.estado="atacando"
 
@@ -192,21 +208,22 @@ function make_jugador()
 
   if j.estado=="atacando" then
    j.t_ataque-=1
-
-  if j.t_ataque > 5 then
-   j.fs={73}
-  elseif j.t_ataque > 2 then
-   j.fs={75}
-  else
-   j.fs={73}
-  end
+ 
+	  if j.t_ataque > 5 then
+	   j.fs={73}
+	  elseif j.t_ataque > 2 then
+	    j.fs={75}
+	  else
+	   j.fs={73}
+	  end
 
   j.df=0
   j.f=1
 
   if j.t_ataque<=0 then
    j.atacando=false
-  end
+  
+ 	end
 
   -- caminando
   elseif j.estado=="caminando" then
@@ -218,7 +235,6 @@ function make_jugador()
    j.fs={1}
    j.df=0
    j.f=1
-  
   
   elseif j.estado=="quieto" then
    j.fs={1}
@@ -242,18 +258,6 @@ function make_jugador()
 
   if j.y>mundo.y_max then
    j.y=mundo.y_max
-  end
-
-  if btnp(4) and j.z==0 then
-   j.vz=j.salto
-  end
-
-  j.z+=j.vz
-  j.vz-=j.gravedad
-
-  if j.z<0 then
-   j.z=0
-   j.vz=0
   end
 
  end
