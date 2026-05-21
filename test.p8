@@ -150,6 +150,14 @@ function make_jugador()
  j.atacando=false
  j.t_ataque=0
  j.estado="quieto"
+ 
+ -- hurtbox del jugador
+	j.bb={
+ x1=2,
+ y1=-17,
+ x2=11,
+ y2=-1
+ }
 
  local upd_base=j.upd
 
@@ -264,6 +272,15 @@ function make_jugador()
 
  j.drw=function()
   spr(j.fs[flr(j.f)], j.x, j.y-j.alto-j.z,2,2,j.flip)
+	 
+	 -- hurt box
+	 rect(
+	  j.x+j.bb.x1,
+	  j.y+j.bb.y1,
+	  j.x+j.bb.x2,
+	  j.y+j.bb.y2,
+	  8
+	 )
  end
 
  return j
@@ -289,10 +306,10 @@ function make_malandro()
 
  -- hurt box
  m.bb={
-  x1=2,
+  x1=3,
   y1=0,
   x2=14,
-  y2=16
+  y2=15
  }
 
  local upd_base=m.upd
