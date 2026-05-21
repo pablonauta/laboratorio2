@@ -152,12 +152,12 @@ function make_jugador()
  j.estado="quieto"
  
  -- hurtbox del jugador
-	j.bb={
- x1=2,
- y1=-17,
- x2=11,
- y2=-1
- }
+	bb={
+ x1=4,
+ y1=-16,
+ x2=12,
+ y2=0
+	}
 
  local upd_base=j.upd
 
