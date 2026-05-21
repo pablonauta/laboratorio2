@@ -152,7 +152,7 @@ function make_jugador()
  j.estado="quieto"
  
  -- hurtbox del jugador
-	bb={
+	j.bb={
  x1=4,
  y1=-16,
  x2=12,
@@ -281,6 +281,10 @@ function make_jugador()
 	  j.y+j.bb.y2,
 	  8
 	 )
+	 
+	 -- caja sprite
+  rect(j.x,j.y-j.alto-j.z,j.x+j.ancho,j.y-j.z,11)
+ 
  end
 
  return j
@@ -361,6 +365,9 @@ function make_malandro()
    m.y+m.bb.y2,
    8
   )
+  
+  -- tamanio del sprite
+  rect(m.x,m.y,m.x+m.ancho,m.y+m.alto,11)
 
  end
 
