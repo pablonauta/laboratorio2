@@ -312,7 +312,7 @@ function make_malandro()
  m.bb={
   x1=3,
   y1=0,
-  x2=14,
+  x2=13,
   y2=15
  }
 
