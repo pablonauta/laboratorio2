@@ -313,6 +313,8 @@ function make_malandro()
 
  m.vel=0.5
  m.dx=-m.vel
+ 
+ m.vida=1
 
  m.estado="patrull"
 
@@ -362,7 +364,16 @@ function make_malandro()
    m.offx=1
   end
 
+-- detectar golpes
+ for e in all(ents) do
+  if e.hb and colision_hb_bb(e,m) then
+   del(ents,m)
+   del(ents,e)
+  end
  end
+
+end
+  
 
  -- draw
  local drw_base=m.drw
@@ -444,6 +455,16 @@ function draw_hitbox(e,c)
   e.x+e.hb.x2,
   e.y+e.hb.y2-e.z,
   c)
+end
+
+function colision_hb_bb(a,b)
+
+ return
+  a.x+a.hb.x1 < b.x+b.bb.x2 and
+  a.x+a.hb.x2 > b.x+b.bb.x1 and
+  a.y+a.hb.y1-a.z < b.y+b.bb.y2-b.z and
+  a.y+a.hb.y2-a.z > b.y+b.bb.y1-b.z
+
 end
 
 
