@@ -138,6 +138,9 @@ function make_jugador()
 
  j.x=64
  j.y=90
+ 
+ j.offx=0
+ j.offy=0
 
  j.vel=1
  
@@ -191,6 +194,12 @@ function make_jugador()
   
   if btnp(4) and j.z==0 then
    j.vz=j.salto
+  end
+  
+  if j.flip then
+   j.offx=0
+  else
+   j.offx=1
   end
 
   j.z+=j.vz
@@ -374,13 +383,17 @@ function sy(e)
 end
 
 function draw_ent(e)
+
+ local ox=e.offx or 0
+ local oy=e.offy or 0
+
  spr(
   e.fs[flr(e.f)],
-  sx(e),
-  sy(e),
+  sx(e)+ox,
+  sy(e)+oy,
   2,2,
-  e.flip
- )
+  e.flip)
+
 end
 
 function draw_hb(e,c)
