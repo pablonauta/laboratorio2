@@ -190,6 +190,7 @@ function make_jugador()
   if btnp(5) and not j.atacando then
    j.atacando=true
    j.t_ataque=8
+   make_golpe(j)
   end
   
   if btnp(4) and j.z==0 then
@@ -284,10 +285,10 @@ function make_jugador()
   draw_ent(j)
 	 
 	 -- hurt box
-	 draw_hb(j,8)
+	 draw_hurtbox(j,8)
 	 
 	 -- caja sprite
-  draw_bb(j,11)
+  draw_sprite_box(j,11)
  
  end
 
@@ -371,10 +372,10 @@ function make_malandro()
   draw_ent(m)
 
   -- hurt box
-  draw_hb(m,8)
+  draw_hurtbox(m,8)
   
   -- tamanio del sprite
-  draw_bb(m,11) 
+  draw_sprite_box(m,11) 
   
  end
 
@@ -416,7 +417,7 @@ function draw_hb(e,c)
 
 end
 
-function draw_bb(e,c)
+function draw_sprite_box(e,c)
 
  rect(
   sx(e),
@@ -427,7 +428,69 @@ function draw_bb(e,c)
 
 end
 
+function draw_hurtbox(e,c)
+ rect(
+  e.x+e.bb.x1,
+  e.y+e.bb.y1-e.z,
+  e.x+e.bb.x2,
+  e.y+e.bb.y2-e.z,
+  c)
+end
 
+function draw_hitbox(e,c)
+ rect(
+  e.x+e.hb.x1,
+  e.y+e.hb.y1-e.z,
+  e.x+e.hb.x2,
+  e.y+e.hb.y2-e.z,
+  c)
+end
+
+
+-->8
+-- ataques
+
+function make_golpe(j)
+
+ local g={}
+
+ g.x=j.x
+ g.y=j.y
+ g.z=j.z or 0
+
+ g.t=6
+
+ if j.flip then
+ g.hb={
+  x1=-6,
+  y1=-14,
+  x2=4,
+  y2=-4}
+	else
+	 g.hb={
+	  x1=12,
+	  y1=-14,
+	  x2=22,
+   y2=-4}
+	end
+
+ g.upd=function()
+  g.t-=1
+
+  if g.t<=0 then
+   del(ents,g)
+  end
+ end
+
+ g.drw=function()
+  draw_hitbox(g,9)
+ end
+
+ add(ents,g)
+
+ return g
+
+end
 __gfx__
 00000000000dddddd0000000000dddddd000000000000000000ddddddd0000000009999990000000000999999000000000770999999000770000000000000000
 0000000000dddd555000000000dddd55500000000000000000dddd5555000000009999fff0000000009999fff00000000000999ffff000700000000000000000
