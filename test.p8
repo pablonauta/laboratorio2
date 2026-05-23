@@ -271,16 +271,11 @@ function make_jugador()
  end
 
  j.drw=function()
-  spr(j.fs[flr(j.f)], j.x, j.y-j.alto-j.z,2,2,j.flip)
+  
+  draw_ent(j)
 	 
 	 -- hurt box
-	 rect(
-	  j.x+j.bb.x1,
-	  j.y+j.bb.y1,
-	  j.x+j.bb.x2,
-	  j.y+j.bb.y2,
-	  8
-	 )
+	 rect(sx(j),sy(j),sx(j)+j.ancho,sy(j)+j.alto,11)
 	 
 	 -- caja sprite
   rect(j.x,j.y-j.alto-j.z,j.x+j.ancho,j.y-j.z,11)
@@ -313,7 +308,7 @@ function make_malandro()
   x1=3,
   y1=0,
   x2=13,
-  y2=15
+  y2=16
  }
 
  local upd_base=m.upd
@@ -355,7 +350,7 @@ function make_malandro()
 
  m.drw=function()
 
-  drw_base()
+   draw_ent(m)
 
   -- hurt box
   rect(
@@ -373,6 +368,25 @@ function make_malandro()
 
  return m
 
+end
+-->8
+-- helpers
+function sx(e)
+ return e.x
+end
+
+function sy(e)
+ return e.y-e.alto-e.z
+end
+
+function draw_ent(e)
+ spr(
+  e.fs[flr(e.f)],
+  sx(e),
+  sy(e),
+  2,2,
+  e.flip
+ )
 end
 __gfx__
 00000000000dddddd0000000000dddddd000000000000000000ddddddd0000000009999990000000000999999000000000770999999000770000000000000000
