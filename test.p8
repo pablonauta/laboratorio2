@@ -306,6 +306,9 @@ function make_malandro()
 
  m.ancho=16
  m.alto=16
+ 
+ m.offx=0
+ m.offy=0
 
  m.vel=0.5
  m.dx=-m.vel
@@ -351,6 +354,12 @@ function make_malandro()
   end
 
   upd_base()
+  
+  if m.flip then
+   m.offx=0
+  else
+   m.offx=1
+  end
 
  end
 
