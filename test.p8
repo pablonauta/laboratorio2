@@ -339,6 +339,8 @@ m.upd=function()
 
 -- estados
 if m.estado=="patrull" then
+  
+  m.dy=0
 
  if m.x<0 then
   m.dx=m.vel
@@ -352,8 +354,7 @@ if m.estado=="patrull" then
  m.df=0.10
 
  if abs(m.x-jug.x)<m.alcance then
-  m.estado="atacando"
-  m.t_estado=30
+  m.estado="alineando"
   m.dx=0
  end
 
@@ -364,10 +365,34 @@ elseif m.estado=="quieto" then
  m.df=0
  m.f=1
 
+elseif m.estado=="alineando" then
 
+ m.dx=0
+ m.fs={10,40,10}
+ m.df=0.10
+
+ if m.x<jug.x then
+  m.flip=false
+ else
+  m.flip=true
+ end
+
+ if abs(m.y-jug.y)>2 then
+  if m.y<jug.y then
+   m.dy=0.3
+  else
+   m.dy=-0.3
+  end
+ else
+  m.dy=0
+  m.estado="atacando"
+  m.t_estado=30
+ end
+ 
 elseif m.estado=="atacando" then
 
  m.dx=0
+ m.dy=0
  m.fs={42,105}
  m.df=0.12
 
@@ -381,6 +406,7 @@ elseif m.estado=="atacando" then
 elseif m.estado=="espera" then
 
  m.dx=0
+ m.dy=0
  m.fs={8}
  m.df=0
  m.f=1
@@ -401,6 +427,7 @@ elseif m.estado=="espera" then
 elseif m.estado=="golpeado" then
 
  m.dx=0
+ m.dy=0
  m.fs={12,107}
  m.df=0.15
 
