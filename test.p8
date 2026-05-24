@@ -156,21 +156,40 @@ function make_jugador()
  j.atacando=false
  j.t_ataque=0
  j.estado="quieto"
+ j.t_estado=0
+ j.vida=100
+ j.t_danio=0
  
  -- hurtbox del jugador
 	j.bb={
- x1=4,
- y1=-16,
- x2=12,
- y2=0
-	}
-
+     x1=4,
+     y1=-16,
+     x2=12,
+     y2=0}
+ 
  local upd_base=j.upd
 
  j.upd=function()
 
   j.dx=0
   j.dy=0
+  
+  if j.t_danio>0 then
+   j.t_danio-=1
+  end
+  
+  -- detectar golpes enemigos
+  if j.t_danio<=0 then
+   for e in all(ents) do
+    if e.hb and colision_hb_bb(e,j) then
+     j.vida-=10
+     j.t_danio=30
+     j.estado="golpeado"
+     j.t_estado=12
+     break
+    end
+   end
+  end
 
   if btn(0) then
    j.dx=-j.vel
@@ -208,13 +227,16 @@ function make_jugador()
 
   j.z+=j.vz
   j.vz-=j.gravedad
-
+  
   if j.z<0 then
    j.z=0
    j.vz=0
   end
-  
-  if j.atacando then
+
+
+  if j.estado=="golpeado" then
+  -- no pisar golpeado
+  elseif j.atacando then
    j.estado="atacando"
 
   elseif j.z > 0 then
@@ -227,16 +249,27 @@ function make_jugador()
    j.estado="quieto"
   end
 
-  if j.estado=="atacando" then
-   j.t_ataque-=1
+  if j.estado=="golpeado" then
+		 j.t_estado-=1
+		 j.fs={1}
+		 j.df=0
+		 j.f=1
+
+ 	if j.t_estado<=0 then
+  	j.estado="quieto"
+ 	end
+
+	elseif j.estado=="atacando" then
+
+ 	j.t_ataque-=1
  
-	  if j.t_ataque > 5 then
-	   j.fs={73}
-	  elseif j.t_ataque > 2 then
-	    j.fs={75}
-	  else
-	   j.fs={73}
-	  end
+	 if j.t_ataque > 5 then
+	  j.fs={73}
+	 elseif j.t_ataque > 2 then
+	  j.fs={75}
+	 else
+	  j.fs={73}
+	 end
 
   j.df=0
   j.f=1
@@ -292,6 +325,8 @@ function make_jugador()
 	 
 	 -- caja sprite
   draw_sprite_box(j,11)
+  
+  print("vida: "..jug.vida,2,2,11)
  
  end
 
@@ -393,12 +428,42 @@ elseif m.estado=="atacando" then
 
  m.dx=0
  m.dy=0
- m.fs={42,105}
- m.df=0.12
+
+ if m.t_estado > 20 then
+  m.fs={42}
+
+ elseif m.t_estado > 10 then
+  m.fs={105}
+
+ else
+  m.fs={42}
+ end
+
+ m.df=0
+ m.f=1
 
  m.t_estado-=1
 
+ if m.t_estado<22 and m.t_estado>10 then
+
+  if m.flip then
+   m.hb={x1=-4,
+   						y1=-12,
+   						x2=6,
+   						y2=-8}
+  else
+   m.hb={x1=10,
+   						y1=-12,
+   						x2=20,
+   						y2=-8}
+  end
+
+ else
+  m.hb=nil
+ end
+
  if m.t_estado<=0 then
+  m.hb=nil
   m.estado="espera"
   m.t_estado=30
  end
@@ -470,7 +535,7 @@ end
  -- detectar golpes
  if m.estado!="caido" then
   for e in all(ents) do
-   if e.hb and colision_hb_bb(e,m) then
+   if e!=m and e.hb and colision_hb_bb(e,m) then
     del(ents,e)
     m.vida-=1
 
@@ -498,6 +563,11 @@ end
   -- tamanio del sprite
   draw_sprite_box(m,11) 
   
+  -- hit box
+  if m.hb then
+   draw_hitbox(m,9)
+  end
+
  end
 
  return m
