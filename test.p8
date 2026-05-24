@@ -21,6 +21,9 @@ function _draw()
 
 	dibujar_mundo(mundo)
 
+	-- ordenar por patitas
+ ordenar_y()
+	
 	for e in all(ents) do
 		e.drw()
 	end
@@ -304,6 +307,7 @@ function make_malandro()
 
  m.x=110
  m.y=90
+ m.z=0
 
  m.ancho=16
  m.alto=16
@@ -318,7 +322,7 @@ function make_malandro()
  m.t_estado=0
 
  m.estado="patrull"
- m.alcance=22
+ m.alcance=12
  m.t_ataque=0
  
  -- hurt box
@@ -496,17 +500,6 @@ function draw_ent(e)
 
 end
 
-function draw_hb(e,c)
-
- rect(
-  e.x+e.bb.x1,
-  e.y+e.bb.y1-e.z,
-  e.x+e.bb.x2,
-  e.y+e.bb.y2-e.z,
-  c)
-
-end
-
 function draw_sprite_box(e,c)
 
  rect(
@@ -546,6 +539,26 @@ function colision_hb_bb(a,b)
 
 end
 
+-- burbujeador system
+function ordenar_y()
+
+ for i=1,#ents-1 do
+
+  for j=1,#ents-i do
+
+   if ents[j].y > ents[j+1].y then
+
+    local tmp=ents[j]
+    ents[j]=ents[j+1]
+    ents[j+1]=tmp
+
+   end
+
+  end
+
+ end
+
+end
 
 -->8
 -- ataques
