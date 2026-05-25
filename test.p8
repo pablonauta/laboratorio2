@@ -270,7 +270,7 @@ function make_jugador()
   if btnp(5) and not j.atacando then
    j.atacando=true
    j.t_ataque=8
-   make_golpe(j)
+   make_golpe(j,"jugador")
   end
   
   if btnp(4) and j.z==0 then
@@ -503,7 +503,7 @@ elseif m.estado=="atacando" then
  m.t_estado-=1
 
  if m.t_estado<22 and m.t_estado>10 and not m.golpe_hecho then
-  make_golpe(m)
+  make_golpe(m,"malandro")
   m.golpe_hecho=true
  end
 
@@ -701,35 +701,50 @@ end
 -->8
 -- ataques
 
-function make_golpe(j)
+function make_golpe(duenio,tipo)
 
  local g={}
  
- g.duenio=j
+ g.duenio=duenio
 
- g.x=j.x
- g.y=j.y
- g.z=j.z or 0
+ g.x=duenio.x
+ g.y=duenio.y
+ g.z=duenio.z or 0
 
  g.t=6
 
- if j.flip then
- g.hb={
-  x1=-6,
-  y1=-14,
-  x2=4,
-  y2=-4}
-	else
-	 g.hb={
-	  x1=12,
-	  y1=-14,
-	  x2=22,
-   y2=-4}
-	end
+ if tipo=="jugador" then
+
+  if duenio.flip then
+   g.hb={x1=-8,
+         y1=-14,
+         x2=5,
+         y2=-4}
+  else
+   g.hb={x1=11,
+         y1=-14,
+         x2=24,
+         y2=-4}
+  end
+
+ elseif tipo=="malandro" then
+
+  if duenio.flip then
+   g.hb={x1=-7,
+         y1=-11,
+         x2=7,
+         y2=-8}
+  else
+   g.hb={x1=10,
+         y1=-11,
+         x2=22,
+         y2=-8}
+  end
+
+ end
 
  g.upd=function()
   g.t-=1
-
   if g.t<=0 then
    del(ents,g)
   end
@@ -740,7 +755,6 @@ function make_golpe(j)
  end
 
  add(ents,g)
-
  return g
 
 end
