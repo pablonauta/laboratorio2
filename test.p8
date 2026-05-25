@@ -3,30 +3,88 @@ version 43
 __lua__
 -- main
 
+modo="intro"
+
 function _init()
-	ents={}
-	mundo=crear_mundo_1()
-	jug=make_jugador()
-	mal=make_malandro()
+
+ modo="intro"
+ ents={}
+
 end
 
 function _update()
-	for e in all(ents) do
-		e.upd()
-	end
+
+ if modo=="intro" then
+  update_intro()
+  return
+ end
+
+ if modo=="juego" then
+  update_juego()
+  return
+ end
+
+end
+
+function update_intro()
+
+ if btnp(4) or btnp(5) then
+  iniciar_juego()
+  modo="juego"
+ end
+
+end
+
+function update_juego()
+
+ for e in all(ents) do
+  e.upd()
+ end
+
 end
 
 function _draw()
-	cls()
 
-	dibujar_mundo(mundo)
+ cls()
 
-	-- ordenar por patitas
+ if modo=="intro" then
+  draw_intro()
+  return
+ end
+
+ if modo=="juego" then
+  draw_juego()
+  return
+ end
+
+end
+
+function draw_intro()
+
+ print("el archivo perdido",30,50,7)
+ print("press x or o",32,65,6)
+
+end
+
+function draw_juego()
+
+ dibujar_mundo(mundo)
+
  ordenar_y()
-	
-	for e in all(ents) do
-		e.drw()
-	end
+
+ for e in all(ents) do
+  e.drw()
+ end
+
+end
+
+function iniciar_juego()
+
+ ents={}
+ mundo=crear_mundo_1()
+
+ jug=make_jugador()
+ make_malandro()
 
 end
 -->8
@@ -359,6 +417,7 @@ function make_malandro()
  m.estado="patrull"
  m.alcance=12
  m.t_ataque=0
+ m.golpe_hecho=false
  
  -- hurt box
  m.bb={
@@ -422,6 +481,7 @@ elseif m.estado=="alineando" then
   m.dy=0
   m.estado="atacando"
   m.t_estado=30
+  m.golpe_hecho=false
  end
  
 elseif m.estado=="atacando" then
@@ -431,10 +491,8 @@ elseif m.estado=="atacando" then
 
  if m.t_estado > 20 then
   m.fs={42}
-
  elseif m.t_estado > 10 then
   m.fs={105}
-
  else
   m.fs={42}
  end
@@ -444,26 +502,13 @@ elseif m.estado=="atacando" then
 
  m.t_estado-=1
 
- if m.t_estado<22 and m.t_estado>10 then
-
-  if m.flip then
-   m.hb={x1=-4,
-   						y1=-12,
-   						x2=6,
-   						y2=-8}
-  else
-   m.hb={x1=10,
-   						y1=-12,
-   						x2=20,
-   						y2=-8}
-  end
-
- else
-  m.hb=nil
+ if m.t_estado<22 and m.t_estado>10 and not m.golpe_hecho then
+  make_golpe(m)
+  m.golpe_hecho=true
  end
 
  if m.t_estado<=0 then
-  m.hb=nil
+  m.golpe_hecho=false
   m.estado="espera"
   m.t_estado=30
  end
@@ -535,7 +580,7 @@ end
  -- detectar golpes
  if m.estado!="caido" then
   for e in all(ents) do
-   if e!=m and e.hb and colision_hb_bb(e,m) then
+   if e.hb and e.duenio!=m and colision_hb_bb(e,m) then
     del(ents,e)
     m.vida-=1
 
@@ -563,10 +608,6 @@ end
   -- tamanio del sprite
   draw_sprite_box(m,11) 
   
-  -- hit box
-  if m.hb then
-   draw_hitbox(m,9)
-  end
 
  end
 
@@ -663,6 +704,8 @@ end
 function make_golpe(j)
 
  local g={}
+ 
+ g.duenio=j
 
  g.x=j.x
  g.y=j.y
