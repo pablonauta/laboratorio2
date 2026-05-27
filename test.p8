@@ -23,6 +23,11 @@ function _update()
   update_juego()
   return
  end
+ 
+ if modo=="game_over" then
+  update_game_over()
+  return
+ end
 
 end
 
@@ -56,6 +61,12 @@ function _draw()
   draw_juego()
   return
  end
+ 
+ if modo=="game_over" then
+  draw_game_over()
+  return
+ end
+
 
 end
 
@@ -85,6 +96,24 @@ function iniciar_juego()
 
  jug=make_jugador()
  make_malandro()
+
+end
+
+function update_game_over()
+
+ if btnp(4) or btnp(5) then
+  iniciar_juego()
+  modo="juego"
+ end
+
+end
+
+function draw_game_over()
+
+ draw_juego()
+
+ print("game over",45,55,8)
+ print("press x or o",34,70,6)
 
 end
 -->8
@@ -248,6 +277,11 @@ function make_jugador()
     end
    end
   end
+  
+  if j.vida<=0 and j.estado!="muerto" then
+   j.estado="muerto"
+   j.t_estado=45
+  end
 
   if btn(0) then
    j.dx=-j.vel
@@ -290,9 +324,10 @@ function make_jugador()
    j.z=0
    j.vz=0
   end
-
-
-  if j.estado=="golpeado" then
+  
+  if j.estado=="muerto" then
+  -- no pisar muerto
+  elseif j.estado=="golpeado" then
   -- no pisar golpeado
   elseif j.atacando then
    j.estado="atacando"
@@ -316,6 +351,19 @@ function make_jugador()
  	if j.t_estado<=0 then
   	j.estado="quieto"
  	end
+ 	
+ elseif j.estado=="muerto" then
+	 j.dx=0
+	 j.dy=0
+	 j.fs={50}
+	 j.df=0
+	 j.f=1
+	
+	 j.t_estado-=1
+	
+	 if j.t_estado<=0 then
+	  modo="game_over"
+	 end
 
 	elseif j.estado=="atacando" then
 
@@ -353,6 +401,8 @@ function make_jugador()
    j.df=0
    j.f=1
   end
+  
+  
  
   upd_base()
 
