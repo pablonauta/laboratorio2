@@ -40,7 +40,6 @@ function update_intro()
 
 end
 
-t_spawn=30
 
 function update_juego()
 
@@ -50,8 +49,9 @@ function update_juego()
  
  t_spawn-=1
 
- if t_spawn<=0 then
+ if t_spawn<=0 and malandros_creados<10 then
   make_malandro()
+  malandros_creados+=1
   t_spawn=30
  end
 
@@ -104,6 +104,9 @@ function iniciar_juego()
  mundo=crear_mundo_1()
 
  jug=make_jugador()
+ t_spawn=30
+ malandros_creados=0
+
  
 end
 
@@ -351,7 +354,7 @@ end
 
  if btnp(4) then
   j.mochilazo=true
-  j.t_mochila=18
+  j.t_mochila=24
   j.golpe_mochila=false
  end
 
@@ -715,14 +718,20 @@ end
  -- detectar golpes
  if m.estado!="caido" then
  for e in all(ents) do
-  if e.hb and e.duenio==jug and colision_hb_bb(e,m) then
-
-   del(ents,e)
+  
+   if e.hb and e.duenio==jug
+   and not e.golpeados[m] 
+   and colision_hb_bb(e,m) then
+   
+   e.golpeados[m]=true
 
    if e.tipo=="jugador" then
+    del(ents,e)
     m.vida-=1
+   
    elseif e.tipo=="mochila" then
     m.vida-=2
+   
    end
 
    if m.vida<=0 then
@@ -856,6 +865,7 @@ function make_golpe(duenio,tipo)
  g.z=duenio.z or 0
 
  g.t=6
+ g.golpeados={}
 
  if tipo=="jugador" then
 
@@ -888,14 +898,14 @@ function make_golpe(duenio,tipo)
 elseif tipo=="mochila" then
 
  if duenio.flip then
-  g.hb={x1=-28,
+  g.hb={x1=-20,
         y1=-15,
         x2=4,
         y2=-3}
  else
   g.hb={x1=12,
         y1=-15,
-        x2=42,
+        x2=28,
         y2=-3}   
  end
 
