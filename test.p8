@@ -257,6 +257,9 @@ function make_jugador()
  j.vida=100
  j.t_danio=0
  
+ j.mochilazo=false
+ j.golpe_mochila=false
+ 
  -- hurtbox del jugador
 	j.bb={
      x1=4,
@@ -276,14 +279,21 @@ function make_jugador()
   end
   
   -- detectar golpes enemigos
-  if j.t_danio<=0 then
+  if j.t_danio<=0 and j.estado!="muerto" then
    for e in all(ents) do
     if e.hb and e.duenio!=j and colision_hb_bb(e,j) then
      j.vida-=10
      j.t_danio=30
-     j.estado="golpeado"
-     j.t_estado=12
-     break
+
+    if j.vida<=0 then
+    j.estado="muerto"
+    j.t_estado=45
+    else
+    j.estado="golpeado"
+    j.t_estado=12
+    end
+
+    break
     end
    end
   end
@@ -292,6 +302,23 @@ function make_jugador()
    j.estado="muerto"
    j.t_estado=45
   end
+
+  if j.estado=="muerto" then
+    j.dx=0
+    j.dy=0
+    j.fs={128}
+    j.df=0
+    j.f=1
+
+    j.t_estado-=1
+
+    if j.t_estado<=0 then
+      modo="game_over"
+  end
+
+ upd_base()
+ return
+end
 
   if btn(0) then
    j.dx=-j.vel
@@ -311,15 +338,27 @@ function make_jugador()
    j.dy=j.vel
   end
 
-  if btnp(5) and not j.atacando then
-   j.atacando=true
-   j.t_ataque=8
-   make_golpe(j,"jugador")
-  end
-  
-  if btnp(4) and j.z==0 then
-   j.vz=j.salto
-  end
+  if j.estado!="golpeado"
+  and j.estado!="muerto"
+  and not j.atacando
+  and not j.mochilazo then
+
+   if btnp(5) then
+    j.atacando=true
+    j.t_ataque=8
+    make_golpe(j,"jugador")
+   end
+
+ if btnp(4) then
+  j.mochilazo=true
+  j.t_mochila=18
+  j.golpe_mochila=false
+ end
+
+end
+  --if btnp(4) and j.z==0 then
+  --- j.vz=j.salto
+  --end
   
   if j.flip then
    j.offx=0
@@ -341,7 +380,10 @@ function make_jugador()
   -- no pisar golpeado
   elseif j.atacando then
    j.estado="atacando"
-
+   
+  elseif j.mochilazo then
+   j.estado="mochilazo"
+  
   elseif j.z > 0 then
    j.estado="saltando"
 
@@ -394,6 +436,34 @@ function make_jugador()
    j.atacando=false
   
  	end
+ 	
+ 	elseif j.estado=="mochilazo" then
+
+		 j.dx=0
+		 j.dy=0
+		
+		 j.t_mochila-=1
+		
+		 if j.t_mochila > 12 then
+		  j.fs={5}
+		 elseif j.t_mochila > 6 then
+		  j.fs={37}
+		
+		  if not j.golpe_mochila then
+		   make_golpe(j,"mochila")
+		   j.golpe_mochila=true
+		  end
+		 else
+		  j.fs={37}
+		 end
+		
+		 j.df=0
+		 j.f=1
+		
+		 if j.t_mochila<=0 then
+		  j.mochilazo=false
+		  j.golpe_mochila=false
+		 end
 
   -- caminando
   elseif j.estado=="caminando" then
@@ -413,7 +483,6 @@ function make_jugador()
   end
   
   
- 
   upd_base()
 
   if j.x<0 then
@@ -444,9 +513,7 @@ function make_jugador()
 	 -- caja sprite
   --draw_sprite_box(j,11)
   
-  print("vida: "..jug.vida,2,2,11)
- 
-  print("vida: "..jug.vida.." ents: "..#ents,2,2,11) 
+   print("vida: "..jug.vida.." ents: "..#ents,2,2,11) 
  end
 
  return j
@@ -647,23 +714,31 @@ end
 
  -- detectar golpes
  if m.estado!="caido" then
-  for e in all(ents) do
-   if e.hb and e.tipo=="jugador" and colision_hb_bb(e,m) then
-    del(ents,e)
-    m.vida-=1
+ for e in all(ents) do
+  if e.hb and e.duenio==jug and colision_hb_bb(e,m) then
 
-    if m.vida<=0 then
-     m.estado="caido"
-     m.t_estado=120
-    else
-     m.estado="golpeado"
-     m.t_estado=12
-    end
+   del(ents,e)
+
+   if e.tipo=="jugador" then
+    m.vida-=1
+   elseif e.tipo=="mochila" then
+    m.vida-=2
    end
+
+   if m.vida<=0 then
+    m.estado="caido"
+    m.t_estado=120
+   else
+    m.estado="golpeado"
+    m.t_estado=12
+   end
+
   end
  end
+end
 
 end
+
 
  -- draw
  m.drw=function()
@@ -809,8 +884,22 @@ function make_golpe(duenio,tipo)
          x2=22,
          y2=-8}
   end
+  
+elseif tipo=="mochila" then
 
+ if duenio.flip then
+  g.hb={x1=-28,
+        y1=-15,
+        x2=4,
+        y2=-3}
+ else
+  g.hb={x1=12,
+        y1=-15,
+        x2=42,
+        y2=-3}   
  end
+
+end
 
  g.upd=function()
   g.t-=1
