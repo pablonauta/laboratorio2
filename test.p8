@@ -898,15 +898,15 @@ function make_golpe(duenio,tipo)
 elseif tipo=="mochila" then
 
  if duenio.flip then
-  g.hb={x1=-20,
-        y1=-15,
-        x2=4,
-        y2=-3}
+  g.hb={x1=-16,
+        y1=-14,
+        x2=5,
+        y2=-4}
  else
-  g.hb={x1=12,
-        y1=-15,
-        x2=28,
-        y2=-3}   
+  g.hb={x1=11,
+        y1=-14,
+        x2=32,
+        y2=-4}   
  end
 
 end
