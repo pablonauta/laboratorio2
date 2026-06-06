@@ -100,6 +100,10 @@ function draw_juego()
  for e in all(ents) do
   e.drw()
  end
+ 
+ camera()
+ 
+ dibujar_hud()
 
 end
 
@@ -127,6 +131,8 @@ end
 function draw_game_over()
 
  draw_juego()
+ 
+ camera()
 
  print("game over",45,55,8)
  print("press x or o",34,70,6)
@@ -524,7 +530,6 @@ end
 	 -- caja sprite
   --draw_sprite_box(j,11)
   
-   print("vida: "..jug.vida.." ents: "..#ents,2,2,11) 
  end
 
  return j
@@ -945,6 +950,19 @@ end
 
  add(ents,g)
  return g
+
+end
+-->8
+-- robin hud
+
+function dibujar_hud()
+
+ print("vida",2,3,10)
+
+ local ancho=flr(jug.vida/100*30)
+
+ rect(20,3,50,6,7)
+ rectfill(21,4,21+ancho-1,5,8)
 
 end
 __gfx__
