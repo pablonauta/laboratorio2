@@ -7,6 +7,7 @@ modo="intro"
 
 function _init()
 
+ cam_x=0
  modo="intro"
  ents={}
 
@@ -46,6 +47,8 @@ function update_juego()
  for e in all(ents) do
   e.upd()
  end
+ 
+ actualizar_camara()
  
  t_spawn-=1
 
@@ -87,6 +90,8 @@ function draw_intro()
 end
 
 function draw_juego()
+
+ camera(cam_x,0)
 
  dibujar_mundo(mundo)
 
@@ -853,6 +858,19 @@ function ordenar_y()
 
 end
 
+function actualizar_camara()
+
+	cam_x=jug.x-64
+
+	if cam_x<0 then
+		cam_x=0
+	end
+
+	if cam_x>mundo.ancho-128 then
+		cam_x=mundo.ancho-128
+	end
+
+end
 -->8
 -- ataques
 
