@@ -409,7 +409,8 @@ function make_jugador()
   end
   
   -- detectar golpes enemigos
-  if j.t_danio<=0 and j.estado!="muerto" then
+  if j.t_danio<=0 
+  and j.estado!="muerto" then
    for e in all(ents) do
     if e.hb and e.duenio!=j and colision_hb_bb(e,j) then
      j.vida-=10
@@ -428,7 +429,8 @@ function make_jugador()
    end
   end
   
-  if j.vida<=0 and j.estado!="muerto" then
+  if j.vida<=0 
+  and j.estado!="muerto" then
    j.estado="muerto"
    j.t_estado=45
   end
