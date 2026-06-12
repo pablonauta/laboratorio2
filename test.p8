@@ -254,8 +254,8 @@ function crear_mundo_2()
 
 	w.ancho=128*3
 
-	w.y_min=60
-	w.y_max=95
+	w.y_min=64
+	w.y_max=104
 
 	w.color=8
 
@@ -266,13 +266,12 @@ function dibujar_mundo(w)
 
  local mx=0
  local my=0
+ local anchocalle=7
 
  if zona==2 then
   mx=48
- end
- 
- if zona==2 then
   my=16
+  anchocalle=5
  end
 
 
@@ -280,7 +279,7 @@ function dibujar_mundo(w)
  map(mx,0,0,my,48,8)
 
  -- calle
-	map(mx,19,0,w.y_min,48,7)
+	map(0,19,0,w.y_min,48,anchocalle)
 	 
 end
 
