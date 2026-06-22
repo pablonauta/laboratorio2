@@ -5,6 +5,29 @@ __lua__
 
 modo="intro"
 
+dificultad="normal"
+max_malandros=2
+
+colores_malandro={8,11,12,14}
+sig_color=1
+
+emboscada_z1=false
+
+spawns_zona1={
+ {80,90,11},
+ {200,90,12},
+ {320,90,14},
+ {380,90,8},
+ {440,90,10}
+}
+
+spawns_emboscada_z1={
+ {365,75,11},
+ {380,85,12},
+ {395,95,14},
+ {410,90,8}
+}
+
 function _init()
 
  cam_x=0
@@ -54,8 +77,22 @@ function update_juego()
  end
  
  actualizar_camara()
+
+ -- emboscada final zona 1
+ if zona==1
+ and not emboscada_z1
+ and jug.x>260 then
+
+  for s in all(spawns_emboscada_z1) do
+   make_malandro(s[1],s[2],s[3])
+  end
+
+  emboscada_z1=true
+ end
  
+ -- pasar a zona 2
  if zona==1 
+ and emboscada_z1
  and enemigos_vivos()==0 
  and jug.x>350 then
  
@@ -64,32 +101,13 @@ function update_juego()
  
  end
 
+ -- victoria en zona 2
  if zona==2 
  and enemigos_vivos()==0 then
   
   modo="victoria"
   return
   
- end
-
- if zona==1 then
-  t_spawn-=1
-
-  if t_spawn<=0 
-  and malandros_creados<2 then
-   make_malandro()
-   malandros_creados+=1
-   t_spawn=30
-  end
- 
- end
-
-end
-
-function update_victoria()
-
- if btnp(4) or btnp(5) then
-  modo="intro"
  end
 
 end
@@ -160,6 +178,14 @@ function draw_juego()
 end
 
 function iniciar_juego()
+ 
+ if dificultad=="facil" then
+  max_malandros=2
+ elseif dificultad=="normal" then
+  max_malandros=6
+ else
+  max_malandros=10
+ end
 
  jefe_muerto=false
  cargar_zona(1)
@@ -183,8 +209,10 @@ function cargar_zona(n)
   jug=make_jugador()
   jug.vida=vida
 
-  t_spawn=30
-  malandros_creados=0
+  for s in all(spawns_zona1) do
+   make_malandro(s[1],s[2])
+  end
+  
  end
 
  if zona==2 then
@@ -660,14 +688,15 @@ end
 
 -- malandro
 
-function make_malandro()
+function make_malandro(x,y,color)
 
  local m=make_entidad()
  
  m.tipo="malandro"
 
- m.x=110
- m.y=90
+ m.x=x or 110
+ m.y=y or 90
+ m.color_ropa=color or 8
  m.z=0
 
  m.ancho=16
@@ -691,6 +720,12 @@ function make_malandro()
  m.f=1
  m.df=0.10
  m.flip=true
+ m.color_ropa=colores_malandro[sig_color]
+
+	sig_color+=1
+	if sig_color>#colores_malandro then
+ 	sig_color=1
+	end
  
  -- hurt box
  m.bb={
@@ -889,8 +924,9 @@ end
  -- draw
  m.drw=function()
 
+  pal(8,m.color_ropa)
   draw_ent(m)
-
+  pal()
   -- hurt box
   --draw_hurtbox(m,8)
   
