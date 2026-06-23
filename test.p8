@@ -28,6 +28,17 @@ spawns_emboscada_z1={
  {410,90,8}
 }
 
+spawns_inicio_z1={
+ {-20,75,11},
+ {-35,85,12},
+ {-50,95,14},
+ {-65,90,8}
+}
+
+emboscada_inicio_z1=false
+t_emboscada_inicio=120
+
+
 function _init()
 
  cam_x=0
@@ -69,7 +80,8 @@ function update_intro()
 
 end
 
-
+-------------------------------
+-------------------------------
 function update_juego()
 
  for e in all(ents) do
@@ -77,6 +89,25 @@ function update_juego()
  end
  
  actualizar_camara()
+ 
+ -- emboscada temprana zona 1
+	if zona==1
+	and not emboscada_inicio_z1 then
+	
+	 t_emboscada_inicio-=1
+	 
+	
+	 if t_emboscada_inicio<=0 then
+	
+	  for s in all(spawns_inicio_z1) do
+	   make_malandro(s[1],s[2],s[3])
+	  end
+	
+	  emboscada_inicio_z1=true
+	 end
+	
+	end
+ 
 
  -- emboscada final zona 1
  if zona==1
@@ -195,7 +226,7 @@ end
 function cargar_zona(n)
 
  local vida=100
-
+ 
  if jug then
   vida=jug.vida
  end
@@ -205,12 +236,15 @@ function cargar_zona(n)
  cam_x=0
 
  if zona==1 then
+  emboscada_z1=false
+  t_emboscada_inicio=30
+  emboscada_inicio_z1=false
   mundo=crear_mundo_1()
   jug=make_jugador()
   jug.vida=vida
 
   for s in all(spawns_zona1) do
-   make_malandro(s[1],s[2])
+   make_malandro(s[1],s[2],s[3])
   end
   
  end
@@ -696,9 +730,12 @@ function make_malandro(x,y,color)
 
  m.x=x or 110
  m.y=y or 90
- m.color_ropa=color or 8
- m.z=0
-
+ m.flip=true
+ m.fs={10,40,10}
+ m.f=1
+	m.df=0.10
+ 
+ m.color_ropa=color or colores_malandro[sig_color]
  m.ancho=16
  m.alto=16
  
@@ -716,12 +753,6 @@ function make_malandro(x,y,color)
  m.t_ataque=0
  m.golpe_hecho=false
  
- m.fs={10,40,10}
- m.f=1
- m.df=0.10
- m.flip=true
- m.color_ropa=colores_malandro[sig_color]
-
 	sig_color+=1
 	if sig_color>#colores_malandro then
  	sig_color=1
@@ -834,18 +865,17 @@ elseif m.estado=="espera" then
  m.t_estado-=1
 
  if m.t_estado<=0 then
- 	m.estado="patrull"
-
+	 m.estado="patrull"
+	
 	 if m.flip then
 	  m.dx=-m.vel
 	 else
 	  m.dx=m.vel
 	 end
 
- end
+	end
 
 elseif m.estado=="golpeado" then
-
  m.dx=0
  m.dy=0
  m.fs={12,107}
