@@ -13,6 +13,10 @@ sig_color=1
 
 emboscada_z1=false
 
+jefe_vicho1=false
+jefe_vicho2=false
+jefe_vicho3=false
+
 spawns_zona1={
  {80,90,11},
 
@@ -142,7 +146,7 @@ function update_juego()
   emboscada_z1=true
  end
  
- -- pasar a zona 2
+  -- pasar a zona 2
  if zona==1 
  and emboscada_z1
  and enemigos_vivos()==0 
@@ -152,14 +156,45 @@ function update_juego()
   return
  
  end
+ 
+  -- jefe vichonea zona 2
+ if zona==2
+ and not jefe_vicho1
+ and jug.x>120 then
+
+  jefe_vicho1=true
+  make_jefe_vichoneando(jug.x+120,
+																							 62,
+																							 jug.x+110
+																							)
+ end
+
+ if zona==2
+ and not jefe_vicho2
+ and jug.x>240 then
+
+  jefe_vicho2=true
+  make_jefe_vichoneando(420,62,340)
+
+ end
+
+ if zona==2
+ and not jefe_vicho3
+ and jug.x>340 then
+
+  jefe_vicho3=true
+  make_jefe_vichoneando(420,62,340)
+
+ end
+
 
  -- victoria en zona 2
  if zona==2 
  and enemigos_vivos()==0 then
-  
+
   modo="victoria"
   return
-  
+
  end
 
 end
@@ -280,12 +315,17 @@ function cargar_zona(n)
  end
 
  if zona==2 then
+ 
+	 jefe_vicho1=false
+	 jefe_vicho2=false
+	 jefe_vicho3=false
 
   mundo=crear_mundo_2()
 
   jug=make_jugador()
   jug.vida=vida
-
+  
+  
   make_malandro(0,90,11)
 	 make_malandro(0,100,11)
   make_malandro()
@@ -1309,6 +1349,59 @@ or abs(n.y-jug.y)>50) then
  return n
 
 end
+
+function make_jefe_vichoneando(x,y,destino_x)
+
+ local j={}
+ 
+ j.x=x
+ j.y=y
+ j.destino_x=destino_x or 90
+
+ j.estado="entrando"
+ j.flip=false
+ j.vel=0.7
+ 
+ j.upd=function()
+
+  if j.estado=="entrando" then
+
+   j.x-=j.vel
+
+   if j.x<=j.destino_x then
+    j.x=j.destino_x
+    j.estado="vichando"
+    j.flip=true
+   end
+
+  elseif j.estado=="vichando" then
+
+   if abs(jug.x-j.x)<40 then
+    j.estado="yendose"
+    j.flip=true
+   end
+
+  elseif j.estado=="yendose" then
+
+   j.x+=1.5
+
+   if j.x>cam_x+160 then
+    del(ents,j)
+   end
+
+  end
+
+ end
+
+ j.drw=function()
+  spr(45,j.x,j.y,2,2,j.flip)
+ end
+
+ add(ents,j)
+
+ return j
+
+end
 -->8
 -- helpers
 function sx(e)
@@ -1597,7 +1690,7 @@ __gfx__
 00000000000dddddd0000000000dddddd00000000dddddd000000000000000000009999990000000000999999000000000000000077011155510000000000000
 0000000000dddd555000000000dddd5550000000dddd55500000000000000000009999fff0000000009999fff000000000000000000666d15551100000000000
 0000000000ddd555a000000000ddd555a0000000ddd555a0000000000000000000999fff8000000000999fff8000000000000000706ffffd1555510000000000
-0000000000ddff555ff0000000ddff555ff00000ddff555ff0000a00000000000099ffffff0000000099ffffff0000000000000007ffffffd155551000000000
+0000000000ddff555ff0000000ddff555ff00000ddff555ff0000a00000000000099ffffff0000000099ffffff0000000000000007f6ffffd155551000000000
 0000000000dddffff000000000dddffff0000000dddffff0000900000000000000997ffff000000000997ffff00000000000000077f80f80fd15510000000000
 0000000000dddfffe000000000dddfffe0000000dddfffe00990a0000000000000999fffe000000000999fffe0007a700000000007f80f80f677600000000000
 00000000000000ff00000000000000ff000000000000ff000999990000000000000000ff00000000700000ff0007770000000000067ffffff677700000000000
