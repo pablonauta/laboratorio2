@@ -15,10 +15,17 @@ emboscada_z1=false
 
 spawns_zona1={
  {80,90,11},
- {200,90,12},
- {320,90,14},
- {380,90,8},
- {440,90,10}
+
+ {180,80,12},
+ {180,100,14},
+
+ {280,75,8},
+ {300,95,10},
+
+ {380,80,11},
+ {380,100,12},
+
+ {460,90,14}
 }
 
 spawns_emboscada_z1={
@@ -745,13 +752,14 @@ function make_malandro(x,y,color)
  m.vel=0.5
  m.dx=-m.vel
  
- m.vida=8
+ m.vida=6
  m.t_estado=0
 
  m.estado="patrull"
  m.alcance=12
  m.t_ataque=0
  m.golpe_hecho=false
+ m.desfase_y=rnd(12)-6
  
 	sig_color+=1
 	if sig_color>#colores_malandro then
@@ -779,7 +787,7 @@ if m.estado=="patrull" then
   m.dx=m.vel
  end
 
- if m.x>120 then
+ if m.x>300 then
   m.dx=-m.vel
  end
 
@@ -810,18 +818,20 @@ elseif m.estado=="alineando" then
   m.flip=true
  end
 
- if abs(m.y-jug.y)>2 then
-  if m.y<jug.y then
-   m.dy=0.5
-  else
-   m.dy=-0.5
-  end
- else
-  m.dy=0
-  m.estado="atacando"
-  m.t_estado=30
-  m.golpe_hecho=false
- end
+ local objetivo_y=jug.y+m.desfase_y
+
+	if abs(m.y-objetivo_y)>2 then
+	 if m.y<objetivo_y then
+	  m.dy=0.5
+	 else
+	  m.dy=-0.5
+	 end
+	else
+	 m.dy=0
+	 m.estado="atacando"
+	 m.t_estado=30
+	 m.golpe_hecho=false
+	end
  
 elseif m.estado=="atacando" then
 
@@ -997,7 +1007,7 @@ function make_nierilander(x,y)
  n.t_botella=0
 
  n.estado="escabiando"
- n.alcance=12
+ n.alcance=16
  n.golpe_hecho=false
 
  
@@ -1164,11 +1174,7 @@ or abs(n.y-jug.y)>50) then
 			  n.t_botella=90
 			 end
 			 
-			 
-   
-   
-
-  elseif n.estado=="espera" then
+	 elseif n.estado=="espera" then
 
    n.dx=0
    n.dy=0
@@ -1213,6 +1219,7 @@ or abs(n.y-jug.y)>50) then
 
   upd_base()
   
+  
   if n.t_botella>0 then
  		n.t_botella-=1
 		end
@@ -1251,6 +1258,8 @@ or abs(n.y-jug.y)>50) then
     end
    end
   end
+  
+  
 
  end
 
@@ -1380,6 +1389,8 @@ function enemigos_vivos()
  return c
 
 end
+
+
 -->8
 -- ataques
 
