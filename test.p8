@@ -46,10 +46,13 @@ spawns_inicio_z1={
 ---  zona 2
 
 spawns_nierilanders_z2={
- {80,52},
- {260,46},
- {340,60},
- {440,50}
+ {100,62},
+ {110,62},
+ {150,62},
+ {185,61},
+ {190,62},
+ {260,47},
+ {250,47}
 }
 
 
@@ -157,6 +160,15 @@ function update_juego()
   modo="victoria"
   return
   
+ end
+
+end
+
+function update_victoria()
+
+ if btnp(4) or btnp(5) then
+  iniciar_juego()
+  modo="juego"
  end
 
 end
@@ -274,7 +286,13 @@ function cargar_zona(n)
   jug=make_jugador()
   jug.vida=vida
 
+  make_malandro(0,90,11)
+	 make_malandro(0,100,11)
   make_malandro()
+  make_malandro(150,90,11)
+		make_malandro(230,100,12)
+		make_malandro(320,90,14)
+		make_malandro(360,100,8)
   
   for s in all(spawns_nierilanders_z2) do
   make_nierilander(s[1],s[2])
@@ -1025,10 +1043,11 @@ function make_nierilander(x,y)
 
  
  n.fs={70}
- n.f=1
+ n.f=flr(rnd(7))+1
  n.df=0.05
  n.flip=true
-
+ 
+ 
  n.bb={
   x1=3,
   y1=-16,
@@ -1393,7 +1412,8 @@ function enemigos_vivos()
  local c=0
 
  for e in all(ents) do
-  if e.tipo=="malandro"
+  if (e.tipo=="malandro" 
+  or e.tipo=="nierilander")
   and e.estado!="caido" then
    c+=1
   end
