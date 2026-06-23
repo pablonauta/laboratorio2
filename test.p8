@@ -42,6 +42,17 @@ spawns_inicio_z1={
  {-65,90,8}
 }
 
+
+---  zona 2
+
+spawns_nierilanders_z2={
+ {80,52},
+ {260,46},
+ {340,60},
+ {440,50}
+}
+
+
 emboscada_inicio_z1=false
 t_emboscada_inicio=120
 
@@ -226,7 +237,7 @@ function iniciar_juego()
  end
 
  jefe_muerto=false
- cargar_zona(1)
+ cargar_zona(2)
 
 end
 
@@ -265,7 +276,9 @@ function cargar_zona(n)
 
   make_malandro()
   
-  make_nierilander(260,45)
+  for s in all(spawns_nierilanders_z2) do
+  make_nierilander(s[1],s[2])
+ end
  end
 
 end
