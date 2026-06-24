@@ -157,36 +157,6 @@ function update_juego()
  
  end
  
-  -- jefe vichonea zona 2
- if zona==2
- and not jefe_vicho1
- and jug.x>120 then
-
-  jefe_vicho1=true
-  make_jefe_vichoneando(jug.x+120,
-																							 62,
-																							 jug.x+110
-																							)
- end
-
- if zona==2
- and not jefe_vicho2
- and jug.x>240 then
-
-  jefe_vicho2=true
-  make_jefe_vichoneando(420,62,340)
-
- end
-
- if zona==2
- and not jefe_vicho3
- and jug.x>340 then
-
-  jefe_vicho3=true
-  make_jefe_vichoneando(420,62,340)
-
- end
-
 
  -- victoria en zona 2
  if zona==2 
@@ -324,6 +294,10 @@ function cargar_zona(n)
 
   jug=make_jugador()
   jug.vida=vida
+  
+  jefe=make_jefe(150,84,"vichando")
+		jefe.prox_x=270
+		jefe.prox_estado="vichando"
   
   
   make_malandro(0,90,11)
@@ -1350,58 +1324,196 @@ or abs(n.y-jug.y)>50) then
 
 end
 
-function make_jefe_vichoneando(x,y,destino_x)
+function make_jefe(x,y,estado_inicial,destino_x)
 
- local j={}
- 
+ local j=make_entidad()
+
+ j.tipo="jefe"
  j.x=x
  j.y=y
- j.destino_x=destino_x or 90
+ j.destino_x=destino_x or x
 
- j.estado="entrando"
+ j.estado=estado_inicial or "combate"
+
  j.flip=false
  j.vel=0.7
+ j.vida=20
+ j.t_estado=0
+ j.t_ataque=0
+ j.golpe_hecho=false
  
- j.upd=function()
+ j.ancho=16
+	j.alto=16
+	
+	j.offx=0
+	j.offy=0
+	
+	j.z=0
 
-  if j.estado=="entrando" then
+ j.f=45
+ j.fs={45}
+ j.df=0.12
 
-   j.x-=j.vel
+ j.bb={
+  x1=2,
+  y1=-16,
+  x2=14,
+  y2=0
+ }
 
-   if j.x<=j.destino_x then
-    j.x=j.destino_x
-    j.estado="vichando"
-    j.flip=true
-   end
+ local upd_base=j.upd
 
-  elseif j.estado=="vichando" then
+j.upd=function()
 
-   if abs(jug.x-j.x)<40 then
-    j.estado="yendose"
-    j.flip=true
-   end
+ upd_base()
 
-  elseif j.estado=="yendose" then
+ if j.estado=="vichando" then
 
-   j.x+=1.5
+  j.dx=0
+  j.dy=0
+  j.fs={45}
+  j.df=0
+  j.f=1
+  j.flip=false
 
-   if j.x>cam_x+160 then
-    del(ents,j)
-   end
-
+  if abs(jug.x-j.x)<40 then
+   j.estado="rajando"
   end
+
+ elseif j.estado=="rajando" then
+
+  j.dx=0
+  j.dy=0
+  j.fs={46,64} -- sprites caminando/rajando
+  j.df=0.15
+  j.flip=true
+  j.x+=1.5
+
+  if j.x>=j.prox_x then
+   j.x=j.prox_x
+   j.estado=j.prox_estado
+
+   if j.x==270 then
+    j.prox_x=340
+    j.prox_estado="combate"
+   end
+  end
+
+ elseif j.estado=="combate" then
+
+  j.fs={45}
+  j.df=0
+  j.f=1
+
+  local dist=abs(jug.x-j.x)
+
+  if jug.x<j.x then
+   j.flip=false
+  else
+   j.flip=true
+  end
+
+  if dist>16 then
+   j.fs={46,47}
+   j.df=0.15
+
+   if jug.x<j.x then
+    j.x-=0.4
+   else
+    j.x+=0.4
+   end
+  else
+   j.estado="pirando"
+   j.t_estado=20
+  end
+
+ elseif j.estado=="pirando" then
+
+  j.dx=0
+  j.dy=0
+  j.fs={48} -- aviso del ataque
+  j.df=0
+  j.f=1
+
+  j.t_estado-=1
+
+  if j.t_estado<=0 then
+   j.estado="atacando"
+   j.t_ataque=18
+   j.golpe_hecho=false
+  end
+
+ elseif j.estado=="atacando" then
+
+  j.dx=0
+  j.dy=0
+
+  if j.t_ataque>10 then
+   j.fs={49}
+  else
+   j.fs={50}
+  end
+
+  j.df=0
+  j.f=1
+
+  j.t_ataque-=1
+
+  if j.t_ataque==10
+  and not j.golpe_hecho
+  and abs(jug.x-j.x)<18
+  and abs(jug.y-j.y)<10 then
+
+   jug.vida-=15
+   jug.t_danio=30
+   j.golpe_hecho=true
+
+   if jug.vida<=0 then
+    modo="game_over"
+   end
+  end
+
+  if j.t_ataque<=0 then
+   j.estado="combate"
+  end
+
+ elseif j.estado=="golpeado" then
+
+  j.dx=0
+  j.dy=0
+  j.fs={51}
+  j.df=0
+  j.f=1
+
+  j.t_estado-=1
+
+  if j.t_estado<=0 then
+   if j.vida<=0 then
+    j.estado="caido"
+   else
+    j.estado="combate"
+   end
+  end
+
+ elseif j.estado=="caido" then
+
+  j.dx=0
+  j.dy=0
+  j.fs={109}
+  j.df=0
+  j.f=1
 
  end
 
+end
  j.drw=function()
-  spr(45,j.x,j.y,2,2,j.flip)
+  draw_ent(j)
  end
 
  add(ents,j)
-
  return j
 
-end
+ end
 -->8
 -- helpers
 function sx(e)
@@ -1742,15 +1854,15 @@ a00aa000000111111111000000000000000770077000700007700770000000a00070000000077007
 0000000000000000dfffff000000000000444ffff099990000444ffff00000000000000000000000444fff000000000000999000999999000000000000000000
 0000000000000000ddfeef000000000000444fff9999990000444fffe00000000000000000000000444ffe000000000000999000009999000000000000000000
 000000000000000000fff00000000000000000ff009f9900000000ff000000000000000000000000000ff0000000000000000000000000000000000000000000
-0000000000000000099a999cc00000000000777870ff000000007778744400000000000000000000007778744000000000000000000000000000000000000000
-00000000000000000999999cc000000000007fffffff000000007ff87444f000000f000000000000007ff8744f00000000000000000000000000000000000000
-000f00000000000009a9ccffcc00000000007fffff40000000007ff87444f0004f3ffe0000000000007ff8744f00000000000000000000000000000000000000
-d555fff0000000000999ccffcc000000000077777440000000007ff7744400004fffff0000000000007ff7744000000000099900009999000000000000000000
-d555fef0ccc0000009a999cccc000000000077777000000000007777700000004fffff0777776000007777700000000000099900009999990000000000000000
-d555fefccccc110600011001100000000000666560000000000066666000000044ffff0888776006006666600000000000099900009999000000000000000000
-d55ffff9ccc91156000110011000000000006665600000000000660660000000444444f7fff76676006660660000000000099900000000000000000000000000
-dd5ffff99999100000077007700000000000776dd00000000000770077000000444444f7fff76676007700770000000000009000000000000000000000000000
-dddddd09ffa91176000666066600000000006666dd00000000006600066000000444440777776676006660666000000000009000000000000000000000000000
+0000000000000000099a999cc00000000000777870ff000000007778744400000000000000000000000778744000000000000000000000000000000000000000
+00000000000000000999999cc000000000007fffffff000000007ff87444f000000f000000000000000ff8744f00000000000000000000000000000000000000
+000f00000000000009a9ccffcc00000000007fffff40000000007ff87444f0004f3ffe0000000000000ff8744f00000000000000000000000000000000000000
+d555fff0000000000999ccffcc000000000077777440000000007ff7744400004fffff0000000000000ff7744000000000099900009999000000000000000000
+d555fef0ccc0000009a999cccc000000000077777000000000007777700000004fffff0777776000000777700000000000099900009999990000000000000000
+d555fefccccc110600011001100000000000666560000000000066666000000044ffff0888776006000666600000000000099900009999000000000000000000
+d55ffff9ccc91156000110011000000000006665600000000000660660000000444444f7fff76676000660660000000000099900000000000000000000000000
+dd5ffff99999100000077007700000000000776dd00000000000770077000000444444f7fff76676000770770000000000009000000000000000000000000000
+dddddd09ffa91176000666066600000000006666dd00000000006600066000000444440777776676000660666000000000009000000000000000000000000000
 0d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000009999900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
