@@ -3,7 +3,8 @@ version 43
 __lua__
 -- main
 
-modo="intro"
+modo="splash"
+t_splash=0
 
 dificultad="normal"
 max_malandros=2
@@ -67,17 +68,34 @@ t_emboscada_inicio=120
 function _init()
 
  cam_x=0
- modo="intro"
+ modo="splash"
+ t_splash=0
+ t_intro=0
  ents={}
 
 end
 
 function _update()
 
+	if modo=="muriendo" then
+	 update_muriendo()
+	 return
+	end
+
+ if modo=="splash" then
+	 update_splash()
+	 return
+	end
+
  if modo=="intro" then
   update_intro()
   return
  end
+ 
+ if modo=="transicion_z2" then
+	 update_transicion_z2()
+	 return
+	end
 
  if modo=="juego" then
   update_juego()
@@ -97,6 +115,8 @@ function _update()
 end
 
 function update_intro()
+
+ t_intro+=1
 
  if btnp(4) or btnp(5) then
   iniciar_juego()
@@ -152,8 +172,9 @@ function update_juego()
  and enemigos_vivos()==0 
  and jug.x>350 then
  
-  cargar_zona(2)
-  return
+  modo="transicion_z2"
+		t_transicion=0
+		return
  
  end
  
@@ -172,29 +193,55 @@ end
 function update_victoria()
 
  if btnp(4) or btnp(5) then
-  iniciar_juego()
-  modo="juego"
+  modo="intro"
+  t_intro=0
  end
-
+ 
 end
 
 function draw_victoria()
 
  cls()
- print("archivo recuperado",24,50,11)
- print("victoria",46,65,7)
- print("press x or o",34,82,6)
+
+ print("archivo recuperado",22,18,11)
+
+ print("el jefe cayo.",34,44,7)
+
+ print("entre los papeles",20,64,6)
+ print("aparecio el pendrive.",12,74,6)
+
+ print("la defensa",38,94,7)
+ print("todavia se puede salvar.",10,104,7)
+
+ if (time()*4)%2<1 then
+  print("x / o volver",34,122,10)
+ end
 
 end
 
 function _draw()
 
  cls()
+ 
+ if modo=="muriendo" then
+	 draw_muriendo()
+	 return
+	end
+ 
+ if modo=="splash" then
+	 draw_splash()
+	 return
+	end
 
  if modo=="intro" then
   draw_intro()
   return
  end
+ 
+ if modo=="transicion_z2" then
+	 draw_transicion_z2()
+	 return
+	end
 
  if modo=="juego" then
   draw_juego()
@@ -216,11 +263,28 @@ end
 
 function draw_intro()
 
- print("el archivo perdido",30,50,7)
- print("press x or o",32,65,6)
+ cls()
+
+ print("faltan 24 horas",18,18,7)
+ print("para la defensa.",20,28,7)
+
+ if t_intro>60 then
+  print("alguien se afano",18,52,8)
+  print("el pendrive!",38,62,8)
+ end
+
+ if t_intro>120 then
+  print("es hora de",30,86,7)
+  print("salir a buscarlo.",16,96,7)
+ end
+
+ if t_intro>180 then
+  if (t_intro\20)%2==0 then
+   print("z / o comenzar",30,116,10)
+  end
+ end
 
 end
-
 function draw_juego()
 
  dibujar_cielo()
@@ -245,15 +309,9 @@ end
 
 function iniciar_juego()
  
- if dificultad=="facil" then
-  max_malandros=2
- elseif dificultad=="normal" then
-  max_malandros=6
- else
-  max_malandros=10
- end
 
  jefe_muerto=false
+ jug=nil
  cargar_zona(1)
 
 end
@@ -328,22 +386,121 @@ function update_game_over()
 
  if btnp(4) or btnp(5) then
 
-  cargar_zona(zona)
-  jug.vida=100
-  modo="juego"
+  modo="intro"
+  t_intro=0
 
  end
+
 
 end
 
 function draw_game_over()
 
+ cls()
+
+ print("game over",46,18,8)
+
+ print("se fumaron",42,48,7)
+ print("el pendrive.",38,58,7)
+
+ print("sin archivo,",38,80,6)
+ print("no hay defensa.",34,90,6)
+
+ if (time()*4)%2<1 then
+  print("z / o reiniciar",28,116,10)
+ end
+
+end
+
+function update_splash()
+
+ t_splash+=1
+
+ if btnp(4) or btnp(5) or t_splash>180 then
+  modo="intro"
+  t_intro=0
+ end
+
+end
+
+function draw_splash()
+
+ cls()
+
+ local x=64
+ local y=70+sin(t_splash/40)*4
+
+ print("tecnografic",42,20,7)
+ print("presenta",48,30,6)
+
+ spr(45,x-8,y-16,2,2,false)
+
+ print("el archivo perdido",30,100,11)
+
+end
+
+function update_transicion_z2()
+
+ t_transicion+=1
+
+ if btnp(4) or btnp(5) then
+  cargar_zona(2)
+  modo="juego"
+ end
+
+end
+
+function draw_transicion_z2()
+
+ cls()
+
+ print("bien...",48,12,7)
+ print("limpiaste la zona.",24,24,7)
+
+ if t_transicion>60 then
+  print("pero el pendrive",18,44,8)
+  print("sigue en manos ajenas.",10,54,8)
+ end
+
+ if t_transicion>120 then
+  print("uno de los",30,76,7)
+  print("malandros hablo...",20,86,7)
+ end
+
+ if t_transicion>170 then
+  print('"anda cerca',24,102,11)
+  print('de la utec..."',22,112,11)
+ end
+
+ if t_transicion>240 then
+  if (t_transicion\20)%2==0 then
+   print("z / o continuar",28,122,10)
+  end
+ end
+
+end
+
+function update_muriendo()
+
+ t_muriendo-=1
+
+ if t_muriendo<=0 then
+  modo="game_over"
+ end
+
+end
+
+function draw_muriendo()
+
  draw_juego()
- 
+
  camera()
 
- print("game over",45,55,8)
- print("press x or o",34,70,6)
+ rectfill(20,42,108,72,8)
+ rect(20,42,108,72,2)
+
+ print("game over",46,50,7)
+ print("pendrive perdido",32,62,7)
 
 end
 -->8
