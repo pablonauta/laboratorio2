@@ -1,7 +1,9 @@
 pico-8 cartridge // http://www.pico-8.com
 version 43
 __lua__
--- main
+-- title: el archivo perdido
+-- author: pablo de leon
+-- desc: beat'em up ambientado en san jose
 
 modo="splash"
 t_splash=0
